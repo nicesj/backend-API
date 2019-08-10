@@ -13,6 +13,15 @@ golang
 # Tools
 go-swagger, docker, cmake, git
 
+# Build
+
+```
+ $ go mod init
+ $ swagger generate server -f api/swagger.yaml
+ $ go get -u -f ./...
+ $ go build cmd/api-for-futuremobile-server/main.go
+```
+
 # Install
 
 # Configuration
