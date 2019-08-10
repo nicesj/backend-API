@@ -1,0 +1,417 @@
+swagger: "2.0"
+info:
+  title: API for futuremobile
+  description: This is a API specification for [futuremobile.net](https://futuremobile.net)
+  version: 0.0.1
+host: futuremobile.net
+basePath: /
+schemes:
+  - https
+paths:
+  /rss:
+    get:
+      tags: 
+        - SEO
+      operationId: getRSS
+      summary: Rich Site Summary
+      description: Generate Rich Site Summary document
+      produces:
+        - application/xml+rss
+        - text/plain
+      responses:
+        200:
+          description: RSS document
+          schema:
+            $ref: "#/definitions/rss"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/notFound"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/internalServerError"
+  /profileImage:
+    get:
+      tags: 
+        - User
+      summary: Retrieve user profile
+      description: Retrieve user profile image
+      operationId: getProfileImage
+      produces:
+        - application/json
+        - image/*
+        - text/plain
+      parameters:
+        - in: query
+          name: id
+          description: Command type
+          type: string
+      responses:
+        '200':
+          description: profile image
+          schema:
+            $ref: "#/definitions/profileImageResponse"
+        '400':
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+        '404':
+          description: Not Found
+          schema:
+            $ref: "#/definitions/notFound"
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/internalServerError"
+  /userInfo:
+    get:
+      tags: 
+        - User
+      summary: Retrieve user information
+      description: Retrieve user information
+      operationId: getUserInfo
+      produces:
+        - application/json
+        - image/*
+        - text/plain
+      parameters:
+        - in: query
+          name: id
+          description: Command type
+          type: string
+      responses:
+        '200':
+          description: profile image
+          schema:
+            $ref: "#/definitions/userInfoResponse"
+        '400':
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+        '404':
+          description: Not Found
+          schema:
+            $ref: "#/definitions/notFound"
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/internalServerError"
+  /signIn:
+    post:
+      tags:
+        - User
+      summary: Sign in to the service
+      description: Sign In
+      operationId: signIn
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - text/plain
+      parameters:
+        - in: body
+          name: userCredential
+          schema:
+            $ref: "#/definitions/signInRequest"
+      responses:
+        '200':
+          description: Authorized user information
+          schema:
+            $ref: "#/definitions/signInResponse"
+        '400':
+          description: Bad Request
+          schema:
+            type: string
+        '404':
+          description: Not Found
+          schema:
+            type: string
+        '500':
+          description: Internal Server Error
+          schema:
+            type: string
+  /search:
+    post:
+      tags:
+        - Search
+      operationId: doSearch
+      summary: Search
+      description: Search contents in a database
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - text/plain
+      parameters:
+        - in: body
+          name: keyword
+          description: Keywords to search contents
+          schema:
+            $ref: "#/definitions/searchRequest"
+      responses:
+        '200':
+          description: Result of search, response type is not specified yet
+          schema:
+            $ref: "#/definitions/searchResponse"
+        '400':
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+        '404':
+          description: Not Found
+          schema:
+            $ref: "#/definitions/notFound"
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/internalServerError"
+definitions:
+  notFound:
+    type: string
+    example: Not Found
+  internalServerError:
+    type: string
+    example: Internal Server Error
+  badRequest:
+    type: string
+    example: Bad Request
+  userInfoResponse:
+    type: object
+    properties:
+      email:
+        type: string
+        example: info@futuremobile.net
+      name:
+        type: string
+        example: info
+      gender:
+        type: string
+        example: male
+      homepage:
+        type: string
+        example: https://futuremobile.net
+  profileImageResponse:
+    type: string
+    format: binary
+  signInResponse:
+    type: object
+    properties:
+      accessToken:
+        description: Access Token
+        type: string
+        example: TY7BcoIwFEW/SIdEhenSBqd9AR4jEoLsIDoYBMGhgPD1bbpye+fce+515rfiS+lQcxALENTQwyPaKQY23Ls0YfxjfZ15pzZIshQMOF0k73MZaJ9xksujyYZcYq1oa7LhLEkNVatthyUOnF6OxxToSWeS3HI5vfHdvmjqKkvx6Tc4Ficj/2wLuvvvB+5hQlctwVLOgVua7e6c/vmqA8FKWBjvKbqihybZmsNBLCjGR4IuWJha67B5jM/ajwhsXxu2imIvHld958vQ9gTtaYk/fFlm9j3ALw==
+      refreshToken:
+        description: Refresh Token
+        type: string
+        example: TY7BcoIwFEW/SIdEhenSBqd9AR4jEoLsIDoYBMGhgPD1bbpye+fce+515rfiS+lQcxALENTQwyPaKQY23Ls0YfxjfZ15pzZIshQMOF0k73MZaJ9xksujyYZcYq1oa7LhLEkNVatthyUOnF6OxxToSWeS3HI5vfHdvmjqKkvx6Tc4Ficj/2wLuvvvB+5hQlctwVLOgVua7e6c/vmqA8FKWBjvKbqihybZmsNBLCjGR4IuWJha67B5jM/ajwhsXxu2imIvHld958vQ9gTtaYk/fFlm9j3ALw==
+      createdAt:
+        description: When the authorized information is created
+        type: string
+        example: 2019-07-15 23:15:18
+      expiresIn:
+        description: Valid until given datetime
+        type: string
+        example: 2019-07-15 23:15:18
+      tokenType:
+        description: A method for validating a token
+        type: string
+        example: bearer
+    required:
+      - accessToken
+      - refreshToken
+      - createdAt
+      - expiresIn
+      - tokenType
+  signInRequest:
+    type: object
+    properties:
+      clientID:
+        description: Client ID
+        type: string
+        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+      clientKey:
+        description: Client Key
+        type: string
+        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+      ID:
+        description: User ID
+        type: string
+        example: info
+      password:
+        description: User Password
+        type: string
+        format: password
+        example: password
+    required:
+      - clientID
+      - clientKey
+      - ID
+      - password
+  searchResponse:
+    type: object
+    properties:
+      clientID:
+        description: Client ID
+        type: string
+        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+      clientKey:
+        description: Client Key
+        type: string
+        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+  searchRequest:
+    type: object
+    properties:
+      clientID:
+        description: Client ID
+        type: string
+        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+      clientKey:
+        description: Client key
+        type: string
+        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+      accessToken:
+        description: Access token
+        type: string
+        example: TY7BcoIwFEW/SIdEhenSBqd9AR4jEoLsIDoYBMGhgPD1bbpye+fce+515rfiS+lQcxALENTQwyPaKQY23Ls0YfxjfZ15pzZIshQMOF0k73MZaJ9xksujyYZcYq1oa7LhLEkNVatthyUOnF6OxxToSWeS3HI5vfHdvmjqKkvx6Tc4Ficj/2wLuvvvB+5hQlctwVLOgVua7e6c/vmqA8FKWBjvKbqihybZmsNBLCjGR4IuWJha67B5jM/ajwhsXxu2imIvHld958vQ9gTtaYk/fFlm9j3ALw==
+    required:
+      - clientID
+      - clientKey
+  rss:
+    type: object
+    properties:
+      rdf:
+        xml:
+          namespace: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+          attribute: true
+      dc:
+        xml:
+          namespace: 'http://purl.org/dc/elements/1.1'
+          attribute: true
+      taxo:
+        xml:
+          namespace: 'http://purl.org/rss/1.0/modules/taxonomy/'
+          attribute: true
+      atom:
+        xml:
+          namespace: 'http://www.w3.org/2005/Atom'
+          attribute: true
+      activity:
+        xml:
+          namespace: 'http://activitystrea.ms/spec/1.0/'
+          attribute: true
+      channel:
+        type: object
+        properties:
+          title:
+            type: string
+            example: RSS of futuremobile.net
+          link:
+            type: string
+            example: https://futuremobile.net
+          description:
+            type: string
+            example: <![CDATA[Software]]>
+          generator:
+            type: string
+            example: futuremobile.net
+          webMaster:
+            type: string
+            example: info@futuremobile.net
+          ttl:
+            type: number
+            format: uint64
+            example: 100
+          image:
+            type: object
+            properties:
+              url:
+                type: string
+                example: <![CDATA[https://futuremobile.net/site.png]]>
+              title:
+                type: string
+                example: futuremobile.net
+              link:
+                type: string
+                example: https://futuremobile.net
+          language:
+            type: string
+            example: ko-KR
+          pubDate:
+            type: string
+            example: Sat, 10 Aug 2019 17:38:23 +0900
+          link:
+            type: object
+            xml:
+              prefix: 'atom'
+            properties:
+              href:
+                type: string
+                xml:
+                  attribute: true
+                example: https://futuremobile.net/rss
+              rel:
+                type: string
+                xml:
+                  attribute: true
+                example: self
+              type:
+                type: string
+                xml:
+                  attribute: true
+                example: application/rss+xml
+          item:
+            type: array
+            items:
+              type: object
+              properties:
+                guid:
+                  type: object
+                  properties:
+                    isPermaLink:
+                      type: boolean
+                      xml:
+                        attribute: true
+                      example: true
+                    value:
+                      type: string
+                      xml:
+                        wrapped: false
+                      example: https://futuremobile.net/bulletin/1
+                title:
+                  type: string
+                  example: Example of a text in the bulletin board
+                link:
+                  type: string
+                  example: https://futuremobile.net/bulletin/1
+                description:
+                  type: string
+                  example: <![CDATA[Retrieved contents]]>
+                author:
+                  type: string
+                  example: info
+                category:
+                  type: string
+                  example: example
+                pubDate:
+                  type: string
+                  example: Fri, 23 Nov 2018 12:19:00 +0900
+                tag:
+                  type: string
+                  example: <![CDATA[example,bulletin,swagger]]>
+                verb:
+                  type: string
+                  xml:
+                    prefix: 'activity'
+                  example: http://activitystrea.ms/schema/1.0/post
+                object-type:
+                  type: string
+                  xml:
+                    prefix: 'activity'
+                  example: http://activitystrea.ms/schema/1.0/blog-entry
+#  /open/validateToken:
+#  /open/veiryUser:
