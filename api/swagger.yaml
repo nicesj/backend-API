@@ -35,6 +35,41 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
+  /isUsed:
+    head:
+      tags:
+        - User
+      operationId: isUsed
+      summary: Check whether the nickname or the id is duplicated
+      description: Check whether the nickname or the id is duplicated
+      produces:
+        - text/plain
+      parameters:
+        - in: query
+          name: nickname
+          description: check the nickname whether it is duplicated or not
+          type: string
+        - in: query
+          name: uid
+          description: check the uid whether it is duplicated or not
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/OK"
+        204:
+          description: No Content
+          schema:
+            $ref: "#/definitions/noContent"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/internalServerError"
   /profileImage:
     get:
       tags: 
@@ -136,18 +171,15 @@ paths:
         400:
           description: Bad Request
           schema:
-            type: string
-            example: Bad Request
+            $ref: "#/definitions/badRequest"
         409:
           description: Conflict
           schema:
-            type: string
-            example: Already Exists
+            $ref: "#/definitions/conflict"
         500:
           description: Internal Server Error
           schema:
-            type: string
-            example: Internal Server Error
+            $ref: "#/definitions/internalServerError"
     post:
       tags:
         - User
@@ -167,18 +199,15 @@ paths:
         200:
           description: OK
           schema:
-            type: string
-            example: OK
+            $ref: "#/definitions/OK"
         400:
           description: Bad Request
           schema:
-            type: string
-            example: Bad Request
+            $ref: "#/definitions/badRequest"
         500:
           description: Internal Server Error
           schema:
-            type: string
-            example: Internal Server Error
+            $ref: "#/definitions/internalServerError"
   /validateToken:
     post:
       tags:
@@ -197,30 +226,25 @@ paths:
             $ref: "#/definitions/validateTokenRequest"
       responses:
         200:
-          description: Authorized
+          description: OK
           schema:
-            type: string
-            example: Authorized
+            $ref: "#/definitions/OK"
         204:
           description: No Content
           schema:
-            type: string
-            example: No Content
+            $ref: "#/definitions/noContent"
         400:
           description: Bad Request
           schema:
-            type: string
-            example: Bad Request
+            $ref: "#/definitions/badRequest"
         404:
           description: Not Found
           schema:
-            type: string
-            example: Not Found
+            $ref: "#/definitions/notFound"
         500:
           description: Internal Server Error
           schema:
-            type: string
-            example: Internal Server Error
+            $ref: "#/definitions/internalServerError"
   /signIn:
     post:
       tags:
@@ -246,15 +270,15 @@ paths:
         400:
           description: Bad Request
           schema:
-            type: string
+            $ref: "#/definitions/badRequest"
         404:
           description: Not Found
           schema:
-            type: string
+            $ref: "#/definitions/notFound"
         500:
           description: Internal Server Error
           schema:
-            type: string
+            $ref: "#/definitions/internalServerError"
   /search:
     post:
       tags:
@@ -300,15 +324,24 @@ definitions:
   accessToken:
     type: string
     example: TY7BcoIwFEW/SIdEhenSBqd9AR4jEoLsIDoYBMGhgPD1bbpye+fce+515rfiS+lQcxALENTQwyPaKQY23Ls0YfxjfZ15pzZIshQMOF0k73MZaJ9xksujyYZcYq1oa7LhLEkNVatthyUOnF6OxxToSWeS3HI5vfHdvmjqKkvx6Tc4Ficj/2wLuvvvB+5hQlctwVLOgVua7e6c/vmqA8FKWBjvKbqihybZmsNBLCjGR4IuWJha67B5jM/ajwhsXxu2imIvHld958vQ9gTtaYk/fFlm9j3ALw==
+  OK:
+    type: string
+    example: OK
   notFound:
     type: string
     example: Not Found
+  noContent:
+    type: string
+    example: No Content
   internalServerError:
     type: string
     example: Internal Server Error
   badRequest:
     type: string
     example: Bad Request
+  conflict:
+    type: string
+    example: Conflict
   verifyUserResponse:
     type: object
     properties:
