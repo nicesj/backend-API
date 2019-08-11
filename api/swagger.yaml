@@ -52,19 +52,19 @@ paths:
           description: Command type
           type: string
       responses:
-        '200':
+        200:
           description: profile image
           schema:
             $ref: "#/definitions/profileImageResponse"
-        '400':
+        400:
           description: Bad Request
           schema:
             $ref: "#/definitions/badRequest"
-        '404':
+        404:
           description: Not Found
           schema:
             $ref: "#/definitions/notFound"
-        '500':
+        500:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
@@ -85,22 +85,142 @@ paths:
           description: Command type
           type: string
       responses:
-        '200':
+        200:
           description: profile image
           schema:
             $ref: "#/definitions/userInfoResponse"
-        '400':
+        400:
           description: Bad Request
           schema:
             $ref: "#/definitions/badRequest"
-        '404':
+        404:
           description: Not Found
           schema:
             $ref: "#/definitions/notFound"
-        '500':
+        500:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
+  /verifyUser:
+    get:
+      tags:
+        - User
+      summary: User verification using an email or a phone
+      description: Send a verification code to a user via the email or the phone
+      operationId: verifyCode
+      produces:
+        - application/json
+        - text/plain
+      parameters:
+        - in: query
+          name: type
+          description: Verify method
+          type: string
+        - in: query
+          name: phone
+          description: Phone number
+          type: string
+        - in: query
+          name: email
+          description: Email address
+          type: string
+        - in: query
+          name: code
+          description: Verify code
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/verifyUserResponse"
+        400:
+          description: Bad Request
+          schema:
+            type: string
+            example: Bad Request
+        409:
+          description: Conflict
+          schema:
+            type: string
+            example: Already Exists
+        500:
+          description: Internal Server Error
+          schema:
+            type: string
+            example: Internal Server Error
+    post:
+      tags:
+        - User
+      summary: User verification using an email or a phone
+      description: Verify a user using the code which has been sent to the user via the email or the phone
+      operationId: getVerificationCode
+      consumes:
+        - application/json
+      produces:
+        - text/plain
+      parameters:
+        - in: body
+          name: verificationInfo
+          schema:
+            $ref: "#/definitions/getVerificationCodeRequest"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: string
+            example: OK
+        400:
+          description: Bad Request
+          schema:
+            type: string
+            example: Bad Request
+        500:
+          description: Internal Server Error
+          schema:
+            type: string
+            example: Internal Server Error
+  /validateToken:
+    post:
+      tags:
+        - User
+      summary: Validate the user token
+      description: Validate a token
+      operationId: validateToken
+      consumes:
+        - application/json
+      produces:
+        - text/plain
+      parameters:
+        - in: body
+          name: token
+          schema:
+            $ref: "#/definitions/validateTokenRequest"
+      responses:
+        200:
+          description: Authorized
+          schema:
+            type: string
+            example: Authorized
+        204:
+          description: No Content
+          schema:
+            type: string
+            example: No Content
+        400:
+          description: Bad Request
+          schema:
+            type: string
+            example: Bad Request
+        404:
+          description: Not Found
+          schema:
+            type: string
+            example: Not Found
+        500:
+          description: Internal Server Error
+          schema:
+            type: string
+            example: Internal Server Error
   /signIn:
     post:
       tags:
@@ -119,19 +239,19 @@ paths:
           schema:
             $ref: "#/definitions/signInRequest"
       responses:
-        '200':
+        200:
           description: Authorized user information
           schema:
             $ref: "#/definitions/signInResponse"
-        '400':
+        400:
           description: Bad Request
           schema:
             type: string
-        '404':
+        404:
           description: Not Found
           schema:
             type: string
-        '500':
+        500:
           description: Internal Server Error
           schema:
             type: string
@@ -154,23 +274,32 @@ paths:
           schema:
             $ref: "#/definitions/searchRequest"
       responses:
-        '200':
+        200:
           description: Result of search, response type is not specified yet
           schema:
             $ref: "#/definitions/searchResponse"
-        '400':
+        400:
           description: Bad Request
           schema:
             $ref: "#/definitions/badRequest"
-        '404':
+        404:
           description: Not Found
           schema:
             $ref: "#/definitions/notFound"
-        '500':
+        500:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
 definitions:
+  clientID:
+    type: string
+    example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+  clientKey:
+    type: string
+    example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+  accessToken:
+    type: string
+    example: TY7BcoIwFEW/SIdEhenSBqd9AR4jEoLsIDoYBMGhgPD1bbpye+fce+515rfiS+lQcxALENTQwyPaKQY23Ls0YfxjfZ15pzZIshQMOF0k73MZaJ9xksujyYZcYq1oa7LhLEkNVatthyUOnF6OxxToSWeS3HI5vfHdvmjqKkvx6Tc4Ficj/2wLuvvvB+5hQlctwVLOgVua7e6c/vmqA8FKWBjvKbqihybZmsNBLCjGR4IuWJha67B5jM/ajwhsXxu2imIvHld958vQ9gTtaYk/fFlm9j3ALw==
   notFound:
     type: string
     example: Not Found
@@ -180,6 +309,39 @@ definitions:
   badRequest:
     type: string
     example: Bad Request
+  verifyUserResponse:
+    type: object
+    properties:
+      accessToken:
+        description: Temporary access token
+        $ref: "#/definitions/accessToken"
+  getVerificationCodeRequest:
+    type: object
+    properties:
+      tauth:
+        description: Request temporary authentication key
+        type: boolean
+        example: true
+      email:
+        description: Email address
+        type: string
+        example: info@futuremobile.net
+      phone:
+        description: Phone number
+        type: string
+        example: +12-12-1234-1234
+  validateTokenRequest:
+    type: object
+    properties:
+      clientKey:
+        description: Client Key
+        $ref: "#/definitions/clientKey"
+      clientID:
+        description: Client ID
+        $ref: "#/definitions/clientID"
+      accessToken:
+        description: Access Token
+        $ref: "#/definitions/accessToken"
   userInfoResponse:
     type: object
     properties:
@@ -203,8 +365,7 @@ definitions:
     properties:
       accessToken:
         description: Access Token
-        type: string
-        example: TY7BcoIwFEW/SIdEhenSBqd9AR4jEoLsIDoYBMGhgPD1bbpye+fce+515rfiS+lQcxALENTQwyPaKQY23Ls0YfxjfZ15pzZIshQMOF0k73MZaJ9xksujyYZcYq1oa7LhLEkNVatthyUOnF6OxxToSWeS3HI5vfHdvmjqKkvx6Tc4Ficj/2wLuvvvB+5hQlctwVLOgVua7e6c/vmqA8FKWBjvKbqihybZmsNBLCjGR4IuWJha67B5jM/ajwhsXxu2imIvHld958vQ9gTtaYk/fFlm9j3ALw==
+        $ref: "#/definitions/accessToken"
       refreshToken:
         description: Refresh Token
         type: string
@@ -232,12 +393,10 @@ definitions:
     properties:
       clientID:
         description: Client ID
-        type: string
-        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+        $ref: "#/definitions/clientID"
       clientKey:
         description: Client Key
-        type: string
-        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+        $ref: "#/definitions/clientKey"
       ID:
         description: User ID
         type: string
@@ -257,28 +416,28 @@ definitions:
     properties:
       clientID:
         description: Client ID
-        type: string
-        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+        $ref: "#/definitions/clientID"
       clientKey:
         description: Client Key
-        type: string
-        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+        $ref: "#/definitions/clientKey"
   searchRequest:
     type: object
     properties:
+      keyword:
+        description: Keywords for searching contents
+        type: string
+        example: hello
       clientID:
         description: Client ID
-        type: string
-        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+        $ref: "#/definitions/clientID"
       clientKey:
         description: Client key
-        type: string
-        example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+        $ref: "#/definitions/clientKey"
       accessToken:
         description: Access token
-        type: string
-        example: TY7BcoIwFEW/SIdEhenSBqd9AR4jEoLsIDoYBMGhgPD1bbpye+fce+515rfiS+lQcxALENTQwyPaKQY23Ls0YfxjfZ15pzZIshQMOF0k73MZaJ9xksujyYZcYq1oa7LhLEkNVatthyUOnF6OxxToSWeS3HI5vfHdvmjqKkvx6Tc4Ficj/2wLuvvvB+5hQlctwVLOgVua7e6c/vmqA8FKWBjvKbqihybZmsNBLCjGR4IuWJha67B5jM/ajwhsXxu2imIvHld958vQ9gTtaYk/fFlm9j3ALw==
+        $ref: "#/definitions/accessToken"
     required:
+      - keyword
       - clientID
       - clientKey
   rss:
@@ -413,5 +572,3 @@ definitions:
                   xml:
                     prefix: 'activity'
                   example: http://activitystrea.ms/schema/1.0/blog-entry
-#  /open/validateToken:
-#  /open/veiryUser:
