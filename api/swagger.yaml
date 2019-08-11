@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  title: API for futuremobile
+  title: frontend
   description: This is a API specification for [futuremobile.net](https://futuremobile.net)
   version: 0.0.1
 host: futuremobile.net

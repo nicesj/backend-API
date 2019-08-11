@@ -22,6 +22,11 @@ go-swagger, docker, cmake, git
  $ go build cmd/api-for-futuremobile-server/main.go
 ```
 
+# Documentation
+```
+ $ swagger serve --no-open --port 8081 api/swagger.yaml
+```
+
 # Install
 
 # Configuration
