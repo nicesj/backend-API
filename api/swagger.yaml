@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  title: frontend
+  title: API
   description: This is a API specification for [futuremobile.net](https://futuremobile.net)
   version: 0.0.1
 host: futuremobile.net
@@ -245,6 +245,85 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
+  /signUp:
+    post:
+      tags:
+        - User
+      summary: Sign up A new user
+      description: Sign up a new user with profile image, name, id, and so on...
+      operationId: signUp
+      consumes:
+        - multipart/form-data
+      produces:
+        - text/plain
+      parameters:
+        - in: formData
+          name: profile_image
+          type: string
+          description: filename of a profile image
+        - in: formData
+          name: files
+          type: file
+          required: false
+          description: file object of a profile image
+        - in: formData
+          name: phone
+          type: string
+          description: phone number
+        - in: formData
+          name: email
+          type: string
+          description: email address
+        - in: formData
+          name: uid
+          type: string
+          description: user id
+        - in: formData
+          name: nickname
+          type: string
+          description: user nickname
+        - in: formData
+          name: name
+          type: string
+          description: user name
+        - in: formData
+          name: password
+          type: string
+          description: user password
+        - in: formData
+          name: gender
+          type: string
+          description: user gender
+        - in: formData
+          name: perm
+          type: string
+          description: open scope for profile information
+        - in: formData
+          name: homepage
+          type: string
+          description: user homepage
+        - in: formData
+          name: birth
+          type: string
+          format: date
+          description: user birthday
+        - in: formData
+          name: affiliation
+          type: string
+          description: user affiliation
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/created"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/internalServerError"
   /signIn:
     post:
       tags:
@@ -339,6 +418,9 @@ definitions:
   badRequest:
     type: string
     example: Bad Request
+  created:
+    type: string
+    example: Created
   conflict:
     type: string
     example: Conflict
