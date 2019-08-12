@@ -35,6 +35,98 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
+  # https://github.com/go-swagger/go-swagger/issues/932
+  /storage?c=readfile:
+    get:
+      tags:
+        - Storage
+      operationId: getStorageFile
+      summary: get a file
+      description: A client is going to get contents of a file
+      produces:
+        - application/octect-stream
+        - text/plain
+      parameters:
+        - in: query
+          name: c
+          type: string
+          description: readfile
+        - in: query
+          name: f
+          type: string
+          description: A file what would be transferred
+      responses:
+        200:
+          description: download a file
+          schema:
+            type: file
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+  /storage?c=readdir:
+    get:
+      tags:
+        - Storage
+      operationId: getStorageFolder
+      summary: Get a list of files and folders
+      description: Get a list of files and folders in a given path (folder)
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: c
+          type: string
+          description: readdir
+        - in: query
+          name: r
+          type: string
+          description: A path of target folder
+      responses:
+        200:
+          description: List of files or folders
+          schema:
+            $ref: "#/definitions/getStorageFolderResponse"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+  /storage:
+    post:
+      tags:
+        - Storage
+      operationId: storage
+      summary: Upload files to the storage
+      description: Upload multiple files into the given path (folder)
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: folder
+          type: string
+          description: A folder (path) to upload files
+        - in: formData # https://swagger.io/docs/specification/2-0/file-upload/
+          name: files
+          type: array
+          description: Array of file objects
+          items:
+            type: string
+            format: binary
+      responses:
+        200:
+          description: Status of file uploading
+          schema:
+            $ref: "#/definitions/storageResponse"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/internalServerError"
   /isUsed:
     head:
       tags:
@@ -260,7 +352,7 @@ paths:
         - in: formData
           name: profile_image
           type: string
-          description: filename of a profile image
+          description: indicates the filename of profile image, if there is no uploaded file, this will be the path of default profile image
         - in: formData
           name: files
           type: file
@@ -424,6 +516,52 @@ definitions:
   conflict:
     type: string
     example: Conflict
+  getStorageFolderResponse:
+    type: object
+    properties:
+      root:
+        type: string
+        description: root folder
+      files:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              description: file or folder name
+              example: hello.txt
+            type:
+              type: string
+              description: "type of an object, d: folder, f: file, s: special, e: error, if the target is a symbolic link, there would be a postfix \"l\" for each type."
+            size:
+              type: number
+              format: unit64
+              description: filesize in bytes
+            time:
+              type: string
+              format: date-time
+              description: last modified time of the object
+            mime:
+              type: string
+              description: mime type
+  storageResponse:
+    type: array
+    items:
+      type: object
+      properties:
+        root:
+          type: string
+          example: /image
+          description: A path where the uploaded files are stored
+        filename:
+          type: string
+          example: myImage.jpg
+          description: Uploaded filename
+        status:
+          type: number
+          example: 200
+          description: Status of uploading file. [ 200, 400, 403, 500 ]
   verifyUserResponse:
     type: object
     properties:
