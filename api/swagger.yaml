@@ -162,27 +162,30 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
-  /profileImage:
+  /userInfo?c=profile:
     get:
       tags: 
         - User
       summary: Retrieve user profile
       description: Retrieve user profile image
-      operationId: getProfileImage
+      operationId: getUserInfoProfile
       produces:
-        - application/json
-        - image/*
+        - application/octect-stream
         - text/plain
       parameters:
         - in: query
-          name: id
-          description: Command type
+          name: c
+          description: command type
+          type: string
+        - in: query
+          name: uid
+          description: user id
           type: string
       responses:
         200:
           description: profile image
           schema:
-            $ref: "#/definitions/profileImageResponse"
+            type: file
         400:
           description: Bad Request
           schema:
@@ -204,11 +207,10 @@ paths:
       operationId: getUserInfo
       produces:
         - application/json
-        - image/*
         - text/plain
       parameters:
         - in: query
-          name: id
+          name: uid
           description: Command type
           type: string
       responses:
@@ -224,6 +226,166 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/notFound"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/internalServerError"
+    post:
+      tags:
+        - User
+      summary: Sign up A new user
+      description: Sign up a new user with profile image, name, id, and so on...
+      operationId: postUserInfo
+      consumes:
+        - multipart/form-data
+      produces:
+        - text/plain
+      parameters:
+        - in: formData
+          name: profile_image
+          type: string
+          description: indicates the filename of profile image, if there is no uploaded file, this will be the path of default profile image
+        - in: formData
+          name: files
+          type: file
+          required: false
+          description: file object of a profile image
+        - in: formData
+          name: phone
+          type: string
+          description: phone number
+        - in: formData
+          name: email
+          type: string
+          description: email address
+        - in: formData
+          name: uid
+          type: string
+          description: user id
+        - in: formData
+          name: nickname
+          type: string
+          description: user nickname
+        - in: formData
+          name: name
+          type: string
+          description: user name
+        - in: formData
+          name: password
+          type: string
+          description: user password
+        - in: formData
+          name: gender
+          type: string
+          description: user gender
+        - in: formData
+          name: perm
+          type: string
+          description: open scope for profile information
+        - in: formData
+          name: homepage
+          type: string
+          description: user homepage
+        - in: formData
+          name: birth
+          type: string
+          format: date
+          description: user birthday
+        - in: formData
+          name: affiliation
+          type: string
+          description: user affiliation
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/created"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/internalServerError"
+    patch:
+      tags:
+        - User
+      summary: update A new user
+      description: update a new user with profile image, name, id, and so on...
+      operationId: updateUserInfo
+      consumes:
+        - multipart/form-data
+      produces:
+        - text/plain
+      parameters:
+        - in: formData
+          name: profile_image
+          type: string
+          description: indicates the filename of profile image, if there is no uploaded file, this will be the path of default profile image
+        - in: formData
+          name: files
+          type: file
+          required: false
+          description: file object of a profile image
+        - in: formData
+          name: phone
+          type: string
+          description: phone number
+        - in: formData
+          name: email
+          type: string
+          description: email address
+        - in: formData
+          name: uid
+          type: string
+          description: user id
+        - in: formData
+          name: nickname
+          type: string
+          description: user nickname
+        - in: formData
+          name: name
+          type: string
+          description: user name
+        - in: formData
+          name: password
+          type: string
+          description: user password
+        - in: formData
+          name: gender
+          type: string
+          description: user gender
+        - in: formData
+          name: perm
+          type: string
+          description: open scope for profile information
+        - in: formData
+          name: homepage
+          type: string
+          description: user homepage
+        - in: formData
+          name: birth
+          type: string
+          format: date
+          description: user birthday
+        - in: formData
+          name: affiliation
+          type: string
+          description: user affiliation
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/OK"
+        204:
+          description: No Content
+          schema:
+            $ref: "#/definitions/noContent"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
         500:
           description: Internal Server Error
           schema:
@@ -333,85 +495,6 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/notFound"
-        500:
-          description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
-  /signUp:
-    post:
-      tags:
-        - User
-      summary: Sign up A new user
-      description: Sign up a new user with profile image, name, id, and so on...
-      operationId: signUp
-      consumes:
-        - multipart/form-data
-      produces:
-        - text/plain
-      parameters:
-        - in: formData
-          name: profile_image
-          type: string
-          description: indicates the filename of profile image, if there is no uploaded file, this will be the path of default profile image
-        - in: formData
-          name: files
-          type: file
-          required: false
-          description: file object of a profile image
-        - in: formData
-          name: phone
-          type: string
-          description: phone number
-        - in: formData
-          name: email
-          type: string
-          description: email address
-        - in: formData
-          name: uid
-          type: string
-          description: user id
-        - in: formData
-          name: nickname
-          type: string
-          description: user nickname
-        - in: formData
-          name: name
-          type: string
-          description: user name
-        - in: formData
-          name: password
-          type: string
-          description: user password
-        - in: formData
-          name: gender
-          type: string
-          description: user gender
-        - in: formData
-          name: perm
-          type: string
-          description: open scope for profile information
-        - in: formData
-          name: homepage
-          type: string
-          description: user homepage
-        - in: formData
-          name: birth
-          type: string
-          format: date
-          description: user birthday
-        - in: formData
-          name: affiliation
-          type: string
-          description: user affiliation
-      responses:
-        201:
-          description: Created
-          schema:
-            $ref: "#/definitions/created"
-        400:
-          description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
         500:
           description: Internal Server Error
           schema:
@@ -610,9 +693,6 @@ definitions:
       homepage:
         type: string
         example: https://futuremobile.net
-  profileImageResponse:
-    type: string
-    format: binary
   signInResponse:
     type: object
     properties:
