@@ -14,7 +14,7 @@ paths:
         - SEO
       operationId: getRSS
       summary: Rich Site Summary
-      description: Generate Rich Site Summary document
+      description: Generate a Rich Site Summary document
       produces:
         - application/xml+rss
         - text/plain
@@ -35,62 +35,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
-  # https://github.com/go-swagger/go-swagger/issues/932
-  /storage?c=readfile:
-    get:
-      tags:
-        - Storage
-      operationId: getStorageFile
-      summary: get a file
-      description: A client is going to get contents of a file
-      produces:
-        - application/octect-stream
-        - text/plain
-      parameters:
-        - in: query
-          name: c
-          type: string
-          description: readfile
-        - in: query
-          name: f
-          type: string
-          description: A file what would be transferred
-      responses:
-        200:
-          description: download a file
-          schema:
-            type: file
-        400:
-          description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
-  /storage?c=readdir:
-    get:
-      tags:
-        - Storage
-      operationId: getStorageFolder
-      summary: Get a list of files and folders
-      description: Get a list of files and folders in a given path (folder)
-      produces:
-        - application/json
-      parameters:
-        - in: query
-          name: c
-          type: string
-          description: readdir
-        - in: query
-          name: r
-          type: string
-          description: A path of target folder
-      responses:
-        200:
-          description: List of files or folders
-          schema:
-            $ref: "#/definitions/getStorageFolderResponse"
-        400:
-          description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
   /storage:
     post:
       tags:
@@ -127,6 +71,54 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
+  # https://github.com/go-swagger/go-swagger/issues/932
+  /storage/readfile:
+    get:
+      tags:
+        - Storage
+      operationId: storageReadFile
+      summary: Download a file
+      description: Streaming a file contents to the client
+      produces:
+        - application/octect-stream
+        - text/plain
+      parameters:
+        - in: query
+          name: f
+          type: string
+          description: A file what would be transferred
+      responses:
+        200:
+          description: download a file
+          schema:
+            type: file
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+  /storage/readdir:
+    get:
+      tags:
+        - Storage
+      operationId: storageReadDir
+      summary: Get a list of files and folders
+      description: Get a list of files and folders in a given path (folder)
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: r
+          type: string
+          description: A path of target folder
+      responses:
+        200:
+          description: List of files or folders
+          schema:
+            $ref: "#/definitions/getStorageFolderResponse"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
   /isUsed:
     head:
       tags:
@@ -138,66 +130,26 @@ paths:
         - text/plain
       parameters:
         - in: query
-          name: nickname
-          description: check the nickname whether it is duplicated or not
+          name: type
           type: string
+          enum: [uid, nickname]
+          description: |
+            Type of checking value
+              * uid - User ID
+              * nickname - User Nickname
         - in: query
-          name: uid
-          description: check the uid whether it is duplicated or not
+          name: value
+          description: nickname or uid
           type: string
       responses:
         200:
-          description: OK
-          schema:
-            $ref: "#/definitions/OK"
-        204:
-          description: No Content
-          schema:
-            $ref: "#/definitions/noContent"
+          description: ok
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
-        500:
-          description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
-  /userInfo?c=profile:
-    get:
-      tags: 
-        - User
-      summary: Retrieve user profile
-      description: Retrieve user profile image
-      operationId: getUserInfoProfile
-      produces:
-        - application/octect-stream
-        - text/plain
-      parameters:
-        - in: query
-          name: c
-          description: command type
-          type: string
-        - in: query
-          name: uid
-          description: user id
-          type: string
-      responses:
-        200:
-          description: profile image
-          schema:
-            type: file
-        400:
-          description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
         404:
           description: Not Found
-          schema:
-            $ref: "#/definitions/notFound"
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
   /userInfo:
     get:
       tags: 
@@ -311,8 +263,8 @@ paths:
     patch:
       tags:
         - User
-      summary: update A new user
-      description: update a new user with profile image, name, id, and so on...
+      summary: Update a user information
+      description: update a user information such as profile image, name, ID, and so on...
       operationId: updateUserInfo
       consumes:
         - multipart/form-data
@@ -375,53 +327,71 @@ paths:
           description: user affiliation
       responses:
         200:
-          description: OK
-          schema:
-            $ref: "#/definitions/OK"
-        204:
-          description: No Content
-          schema:
-            $ref: "#/definitions/noContent"
+          description: ok
         400:
           description: Bad Request
           schema:
             $ref: "#/definitions/badRequest"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/notFound"
         500:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
-  /verifyUser:
+  /userInfo/profile:
     get:
-      tags:
+      tags: 
         - User
-      summary: User verification using an email or a phone
-      description: Send a verification code to a user via the email or the phone
-      operationId: verifyCode
+      summary: Retrieve user profile
+      description: Retrieve user profile image
+      operationId: getUserInfoProfile
       produces:
-        - application/json
+        - application/octect-stream
         - text/plain
       parameters:
         - in: query
-          name: type
-          description: Verify method
-          type: string
-        - in: query
-          name: phone
-          description: Phone number
-          type: string
-        - in: query
-          name: email
-          description: Email address
-          type: string
-        - in: query
-          name: code
-          description: Verify code
+          name: uid
+          description: user id
           type: string
       responses:
         200:
-          description: OK
+          description: profile image
           schema:
-            $ref: "#/definitions/verifyUserResponse"
+            type: file
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/badRequest"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/notFound"
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/internalServerError"
+  /verify/user/getCode:
+    post:
+      tags:
+        - Verify
+      operationId: verifyUserGetCode
+      summary: Get the code for verify a user
+      description: In order to verify a user, send the code to the user via an email or a phone
+      produces:
+        - application/json
+        - text/plain
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: verify
+          schema:
+            $ref: "#/definitions/verifyUserGetCodeParam"
+      responses:
+        200:
+          description: ok
         400:
           description: Bad Request
           schema:
@@ -434,67 +404,73 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
+  /verify/user:
     post:
       tags:
-        - User
-      summary: User verification using an email or a phone
-      description: Verify a user using the code which has been sent to the user via the email or the phone
-      operationId: getVerificationCode
+        - Verify
+      operationId: verifyUser
+      summary: Verify a user
+      description: Verify a user by the email address or the phone number
+      produces:
+        - application/json
+        - text/plain
       consumes:
         - application/json
-      produces:
-        - text/plain
       parameters:
         - in: body
-          name: verificationInfo
+          name: verify
           schema:
-            $ref: "#/definitions/getVerificationCodeRequest"
+            $ref: "#/definitions/verifyUserParam"
       responses:
         200:
-          description: OK
+          description: ok
           schema:
-            $ref: "#/definitions/OK"
+            type: object
+            required:
+              - accessToken
+            properties:
+              accessToken:
+                $ref: "#/definitions/accessToken"
         400:
           description: Bad Request
           schema:
             $ref: "#/definitions/badRequest"
+        409:
+          description: Conflict
+          schema:
+            $ref: "#/definitions/conflict"
         500:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
-  /validateToken:
+  /verify/token:
     post:
       tags:
-        - User
-      summary: Validate the user token
-      description: Validate a token
-      operationId: validateToken
+        - Verify
+      operationId: verifyToken
+      summary: Verify credentials
+      description: Verify credentials, such as a token
+      produces:
+        - application/json
+        - text/plain
       consumes:
         - application/json
-      produces:
-        - text/plain
       parameters:
         - in: body
-          name: token
+          name: verify
           schema:
-            $ref: "#/definitions/validateTokenRequest"
+            $ref: "#/definitions/verifyTokenParam"
       responses:
         200:
-          description: OK
-          schema:
-            $ref: "#/definitions/OK"
-        204:
-          description: No Content
-          schema:
-            $ref: "#/definitions/noContent"
+          description: ok
         400:
           description: Bad Request
           schema:
             $ref: "#/definitions/badRequest"
-        404:
-          description: Not Found
+        409:
+          description: Conflict
           schema:
-            $ref: "#/definitions/notFound"
+            $ref: "#/definitions/conflict"
         500:
           description: Internal Server Error
           schema:
@@ -571,22 +547,20 @@ paths:
 definitions:
   clientID:
     type: string
+    description: Client ID
     example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
   clientKey:
     type: string
+    description: Client Key
     example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
   accessToken:
     type: string
+    description: Access token
+    x-nullable: true
     example: TY7BcoIwFEW/SIdEhenSBqd9AR4jEoLsIDoYBMGhgPD1bbpye+fce+515rfiS+lQcxALENTQwyPaKQY23Ls0YfxjfZ15pzZIshQMOF0k73MZaJ9xksujyYZcYq1oa7LhLEkNVatthyUOnF6OxxToSWeS3HI5vfHdvmjqKkvx6Tc4Ficj/2wLuvvvB+5hQlctwVLOgVua7e6c/vmqA8FKWBjvKbqihybZmsNBLCjGR4IuWJha67B5jM/ajwhsXxu2imIvHld958vQ9gTtaYk/fFlm9j3ALw==
-  OK:
-    type: string
-    example: OK
   notFound:
     type: string
     example: Not Found
-  noContent:
-    type: string
-    example: No Content
   internalServerError:
     type: string
     example: Internal Server Error
@@ -599,6 +573,53 @@ definitions:
   conflict:
     type: string
     example: Conflict
+  verifyTokenParam:
+    type: object
+    required:
+      - clientKey
+      - clientID
+      - accessToken
+    properties:
+      clientKey:
+        $ref: "#/definitions/clientKey"
+      clientID:
+        $ref: "#/definitions/clientID"
+      accessToken:
+        $ref: "#/definitions/accessToken"
+  verifyUserGetCodeParam:
+    type: object
+    required:
+      - type
+      - value
+    properties:
+      type:
+        type: string
+        description: A type of value
+        enum: [email, phone]
+      value:
+        type: string
+        description: |
+          * email - An email address (info@futuremobile.net)
+          * phone - A phone number (+12-12-1234-1234)
+  verifyUserParam:
+    type: object
+    required:
+      - type
+      - value
+      - code
+    properties:
+      type:
+        type: string
+        description: A type of value
+        enum: [email, phone]
+      value:
+        type: string
+        description: |
+          * email - An email address (info@futuremobile.net)
+          * phone - A phone number (+12-12-1234-1234)
+      code:
+        type: string
+        description: A verification code
   getStorageFolderResponse:
     type: object
     properties:
@@ -616,7 +637,14 @@ definitions:
               example: hello.txt
             type:
               type: string
-              description: "type of an object, d: folder, f: file, s: special, e: error, if the target is a symbolic link, there would be a postfix \"l\" for each type."
+              enum: [d, f, s, e, dl, fl, sl, el]
+              description: |
+                type of an object,
+                * d - folder
+                * f - file
+                * s - special
+                * e - error
+                if the target is a symbolic link, there would be a postfix "l"(L) for each type.
             size:
               type: number
               format: unit64
@@ -632,52 +660,23 @@ definitions:
     type: array
     items:
       type: object
+      required:
+        - status
       properties:
         root:
           type: string
           example: /image
           description: A path where the uploaded files are stored
+          x-nullable: true
         filename:
           type: string
           example: myImage.jpg
           description: Uploaded filename
+          x-nullable: true
         status:
           type: number
           example: 200
           description: Status of uploading file. [ 200, 400, 403, 500 ]
-  verifyUserResponse:
-    type: object
-    properties:
-      accessToken:
-        description: Temporary access token
-        $ref: "#/definitions/accessToken"
-  getVerificationCodeRequest:
-    type: object
-    properties:
-      tauth:
-        description: Request temporary authentication key
-        type: boolean
-        example: true
-      email:
-        description: Email address
-        type: string
-        example: info@futuremobile.net
-      phone:
-        description: Phone number
-        type: string
-        example: +12-12-1234-1234
-  validateTokenRequest:
-    type: object
-    properties:
-      clientKey:
-        description: Client Key
-        $ref: "#/definitions/clientKey"
-      clientID:
-        description: Client ID
-        $ref: "#/definitions/clientID"
-      accessToken:
-        description: Access Token
-        $ref: "#/definitions/accessToken"
   userInfoResponse:
     type: object
     properties:
@@ -695,9 +694,14 @@ definitions:
         example: https://futuremobile.net
   signInResponse:
     type: object
+    required:
+      - accessToken
+      - refreshToken
+      - createdAt
+      - expiresIn
+      - tokenType
     properties:
       accessToken:
-        description: Access Token
         $ref: "#/definitions/accessToken"
       refreshToken:
         description: Refresh Token
@@ -715,20 +719,17 @@ definitions:
         description: A method for validating a token
         type: string
         example: bearer
-    required:
-      - accessToken
-      - refreshToken
-      - createdAt
-      - expiresIn
-      - tokenType
   signInRequest:
     type: object
+    required:
+      - clientID
+      - clientKey
+      - ID
+      - password
     properties:
       clientID:
-        description: Client ID
         $ref: "#/definitions/clientID"
       clientKey:
-        description: Client Key
         $ref: "#/definitions/clientKey"
       ID:
         description: User ID
@@ -739,40 +740,30 @@ definitions:
         type: string
         format: password
         example: password
-    required:
-      - clientID
-      - clientKey
-      - ID
-      - password
   searchResponse:
     type: object
     properties:
       clientID:
-        description: Client ID
         $ref: "#/definitions/clientID"
       clientKey:
-        description: Client Key
         $ref: "#/definitions/clientKey"
   searchRequest:
     type: object
+    required:
+      - keyword
+      - clientID
+      - clientKey
     properties:
       keyword:
         description: Keywords for searching contents
         type: string
         example: hello
       clientID:
-        description: Client ID
         $ref: "#/definitions/clientID"
       clientKey:
-        description: Client key
         $ref: "#/definitions/clientKey"
       accessToken:
-        description: Access token
         $ref: "#/definitions/accessToken"
-    required:
-      - keyword
-      - clientID
-      - clientKey
   rss:
     type: object
     properties:
