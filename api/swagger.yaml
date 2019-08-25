@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  title: API
+  title: OpenAPI (REST)
   description: This is a API specification for [futuremobile.net](https://futuremobile.net)
   version: 0.0.1
 host: futuremobile.net
@@ -44,16 +44,10 @@ paths:
             $ref: "#/definitions/rss"
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
         404:
           description: Not Found
-          schema:
-            $ref: "#/definitions/notFound"
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
   /storage/writeFile:
     post:
       tags:
@@ -87,12 +81,10 @@ paths:
             $ref: "#/definitions/storageResponse"
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
+        403:
+          description: Forbidden
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
   # https://github.com/go-swagger/go-swagger/issues/932
   /storage/readFile:
     get:
@@ -120,8 +112,8 @@ paths:
             type: file
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
+        403:
+          description: Forbidden
   /storage/readFolder:
     get:
       tags:
@@ -147,8 +139,8 @@ paths:
             $ref: "#/definitions/getStorageFolderResponse"
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
+        403:
+          description: Forbidden
   /isUsed:
     head:
       tags:
@@ -181,8 +173,8 @@ paths:
           description: No Content
         400:
           description: Bad Request
-        404:
-          description: Not Found
+        403:
+          description: Forbidden
         409:
           description: Conflict
         500:
@@ -191,8 +183,8 @@ paths:
     get:
       tags: 
         - User
-      summary: Retrieve user information
-      description: Retrieve user information
+      summary: Retrieve a user information
+      description: Retrieve a user information
       operationId: getUserInfo
       security: []
       produces:
@@ -210,16 +202,12 @@ paths:
             $ref: "#/definitions/userInfoResponse"
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
+        403:
+          description: Forbidden
         404:
           description: Not Found
-          schema:
-            $ref: "#/definitions/notFound"
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
     post:
       tags:
         - User
@@ -296,12 +284,10 @@ paths:
             $ref: "#/definitions/created"
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
+        403:
+          description: Forbidden
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
     patch:
       tags:
         - User
@@ -376,16 +362,12 @@ paths:
           description: ok
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
+        403:
+          description: Forbidden
         404:
           description: Not Found
-          schema:
-            $ref: "#/definitions/notFound"
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
   /userInfo/profile:
     get:
       tags: 
@@ -409,16 +391,12 @@ paths:
             type: file
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
+        403:
+          description: Forbidden
         404:
           description: Not Found
-          schema:
-            $ref: "#/definitions/notFound"
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
   /verify/user/getCode:
     post:
       tags:
@@ -442,12 +420,8 @@ paths:
           description: ok
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
   /verify/user:
     post:
       tags:
@@ -478,12 +452,8 @@ paths:
                 $ref: "#/definitions/accessToken"
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
   /verify/token:
     post:
       tags:
@@ -512,16 +482,12 @@ paths:
           description: ok
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
+        403:
+          description: Forbidden
         409:
           description: Conflict
-          schema:
-            $ref: "#/definitions/conflict"
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
   /signIn:
     post:
       tags:
@@ -547,16 +513,10 @@ paths:
             $ref: "#/definitions/signInResponse"
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
         404:
           description: Not Found
-          schema:
-            $ref: "#/definitions/notFound"
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
   /search:
     post:
       tags:
@@ -583,16 +543,10 @@ paths:
             $ref: "#/definitions/searchResponse"
         400:
           description: Bad Request
-          schema:
-            $ref: "#/definitions/badRequest"
         404:
           description: Not Found
-          schema:
-            $ref: "#/definitions/notFound"
         500:
           description: Internal Server Error
-          schema:
-            $ref: "#/definitions/internalServerError"
 definitions:
   clientID:
     type: string
@@ -613,6 +567,9 @@ definitions:
   internalServerError:
     type: string
     example: Internal Server Error
+  forbidden:
+    type: string
+    example: Forbidden
   badRequest:
     type: string
     example: Bad Request

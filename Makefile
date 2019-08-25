@@ -10,7 +10,7 @@ go.mod:
 	@go mod init
 
 generate: ${SPEC_FILE} go.mod
-	@swagger generate server -f ${SPEC_FILE} -t ${BASE} --api-package=operations --model-package=models --server-package=restapi
+	@swagger generate server -f ${SPEC_FILE} -t ${BASE} --api-package=pkg/operations --model-package=pkg/models --server-package=pkg/restapi
 
 getmodule: generate
 	@go get -u -f ./${BASE}/...
