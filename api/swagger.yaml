@@ -7,6 +7,24 @@ host: futuremobile.net
 basePath: /
 schemes:
   - https
+securityDefinitions: # https://swagger.io/docs/specification/2-0/authentication/
+  OAuth2:
+    type: oauth2 # basic, apiKey, oauth2
+    flow: accessCode
+    authorizationUrl: https://futuremobile.net/oauth2/authorize
+    tokenUrl: https://futuremobile.net/oauth2/token
+    scopes:
+      userinfo.write: Grants write access for the user info
+      userinfo.read: Grants read access for the user info
+      userinfo.admin: Grants admin access for the user info
+      storage.write: Grants write access for the storage
+      storage.read: Grants read access for the storage
+      storage.admin: Grants admin access for the storage
+      admin: Grants admin access for all resources
+  APIKeyAuth:
+    type: apiKey
+    in: header
+    name: Authorization
 paths:
   /rss:
     get:
@@ -15,6 +33,7 @@ paths:
       operationId: getRSS
       summary: Rich Site Summary
       description: Generate a Rich Site Summary document
+      security: []
       produces:
         - application/xml+rss
         - text/plain
@@ -35,13 +54,17 @@ paths:
           description: Internal Server Error
           schema:
             $ref: "#/definitions/internalServerError"
-  /storage:
+  /storage/writeFile:
     post:
       tags:
         - Storage
-      operationId: storage
+      operationId: storageWriteFile
       summary: Upload files to the storage
       description: Upload multiple files into the given path (folder)
+      security:
+       - OAuth2: [storage.write]
+       - OAuth2: [storage.admin]
+       - OAuth2: [admin]
       consumes:
         - multipart/form-data
       produces:
@@ -54,10 +77,9 @@ paths:
         - in: formData # https://swagger.io/docs/specification/2-0/file-upload/
           name: files
           type: array
-          description: Array of file objects
           items:
             type: string
-            format: binary
+            format: byte   # Should be binary
       responses:
         200:
           description: Status of file uploading
@@ -72,13 +94,17 @@ paths:
           schema:
             $ref: "#/definitions/internalServerError"
   # https://github.com/go-swagger/go-swagger/issues/932
-  /storage/readfile:
+  /storage/readFile:
     get:
       tags:
         - Storage
       operationId: storageReadFile
       summary: Download a file
       description: Streaming a file contents to the client
+      security:
+       - OAuth2: [storage.read]
+       - OAuth2: [storage.admin]
+       - Oauth2: [admin]
       produces:
         - application/octect-stream
         - text/plain
@@ -96,13 +122,17 @@ paths:
           description: Bad Request
           schema:
             $ref: "#/definitions/badRequest"
-  /storage/readdir:
+  /storage/readFolder:
     get:
       tags:
         - Storage
-      operationId: storageReadDir
+      operationId: storageReadFolder
       summary: Get a list of files and folders
       description: Get a list of files and folders in a given path (folder)
+      security:
+       - OAuth2: [storage.read]
+       - OAuth2: [storage.admin]
+       - OAuth2: [admin]
       produces:
         - application/json
       parameters:
@@ -126,6 +156,11 @@ paths:
       operationId: isUsed
       summary: Check whether the nickname or the id is duplicated
       description: Check whether the nickname or the id is duplicated
+      security:
+        - APIKeyAuth: []
+        - OAuth2: [userinfo.read]
+        - OAuth2: [userinfo.admin]
+        - OAuth2: [admin]
       produces:
         - text/plain
       parameters:
@@ -142,12 +177,14 @@ paths:
           description: nickname or uid
           type: string
       responses:
-        200:
-          description: ok
+        204:
+          description: No Content
         400:
           description: Bad Request
         404:
           description: Not Found
+        409:
+          description: Conflict
         500:
           description: Internal Server Error
   /userInfo:
@@ -157,6 +194,7 @@ paths:
       summary: Retrieve user information
       description: Retrieve user information
       operationId: getUserInfo
+      security: []
       produces:
         - application/json
         - text/plain
@@ -188,6 +226,10 @@ paths:
       summary: Sign up A new user
       description: Sign up a new user with profile image, name, id, and so on...
       operationId: postUserInfo
+      security:
+        - OAuth2: [userinfo.write]
+        - OAuth2: [userinfo.admin]
+        - OAuth2: [admin]
       consumes:
         - multipart/form-data
       produces:
@@ -266,6 +308,10 @@ paths:
       summary: Update a user information
       description: update a user information such as profile image, name, ID, and so on...
       operationId: updateUserInfo
+      security:
+        - OAuth2: [userinfo.write]
+        - OAuth2: [userinfo.admin]
+        - OAuth2: [admin]
       consumes:
         - multipart/form-data
       produces:
@@ -347,6 +393,7 @@ paths:
       summary: Retrieve user profile
       description: Retrieve user profile image
       operationId: getUserInfoProfile
+      security: []
       produces:
         - application/octect-stream
         - text/plain
@@ -379,6 +426,7 @@ paths:
       operationId: verifyUserGetCode
       summary: Get the code for verify a user
       description: In order to verify a user, send the code to the user via an email or a phone
+      security: []
       produces:
         - application/json
         - text/plain
@@ -396,10 +444,6 @@ paths:
           description: Bad Request
           schema:
             $ref: "#/definitions/badRequest"
-        409:
-          description: Conflict
-          schema:
-            $ref: "#/definitions/conflict"
         500:
           description: Internal Server Error
           schema:
@@ -411,6 +455,7 @@ paths:
       operationId: verifyUser
       summary: Verify a user
       description: Verify a user by the email address or the phone number
+      security: []
       produces:
         - application/json
         - text/plain
@@ -435,10 +480,6 @@ paths:
           description: Bad Request
           schema:
             $ref: "#/definitions/badRequest"
-        409:
-          description: Conflict
-          schema:
-            $ref: "#/definitions/conflict"
         500:
           description: Internal Server Error
           schema:
@@ -450,6 +491,12 @@ paths:
       operationId: verifyToken
       summary: Verify credentials
       description: Verify credentials, such as a token
+      security:
+        - OAuth2: [userinfo.read]
+        - OAuth2: [storage.read]
+        - OAuth2: [userinfo.admin]
+        - OAuth2: [storage.admin]
+        - OAuth2: [admin]
       produces:
         - application/json
         - text/plain
@@ -482,6 +529,7 @@ paths:
       summary: Sign in to the service
       description: Sign In
       operationId: signIn
+      security: []
       consumes:
         - application/json
       produces:
@@ -516,6 +564,7 @@ paths:
       operationId: doSearch
       summary: Search
       description: Search contents in a database
+      security: []
       consumes:
         - application/json
       produces:
