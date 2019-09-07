@@ -48,6 +48,71 @@ paths:
           description: Not Found
         500:
           description: Internal Server Error
+  /authorize:
+    get:
+      tags:
+        - OAuth2
+      operationId: authorizeOAuth2
+      summary: Authorize a user
+      description: Provide sign in page to authorize a user for the application
+      security: []
+      produces:
+        - text/html
+        - text/plain
+      parameters:
+        - in: query
+          name: id
+          type: string
+          description: Client ID
+        - in: query
+          name: type
+          type: string
+          description: Grant Type
+          enum: [authorization_code]
+        - in: query
+          name: state
+          type: string
+          description: Application context
+        - in: query
+          name: url
+          type: string
+          description: return url
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+  /token:
+    post:
+      tags:
+        - OAuth2
+      operationId: tokenOAuth2
+      summary: Retrieve a token
+      description: Get a token using a code which was given after authorizing a user
+      security: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - text/plain
+      parameters:
+        - in: body
+          name: oauth2Token
+          schema:
+            $ref: '#/definitions/oauth2Token'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
   /storage/writeFile:
     post:
       tags:
@@ -280,8 +345,6 @@ paths:
       responses:
         201:
           description: Created
-          schema:
-            $ref: "#/definitions/created"
         400:
           description: Bad Request
         403:
@@ -548,6 +611,11 @@ paths:
         500:
           description: Internal Server Error
 definitions:
+  grantType:
+    type: string
+    description: Grant Type
+    example: authorization_code
+    enum: [authorization_code]
   clientID:
     type: string
     description: Client ID
@@ -556,29 +624,37 @@ definitions:
     type: string
     description: Client Key
     example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+  authorizationCode:
+    type: string
+    description: Authorization Code
+    example: a412341b
+  state:
+    type: string
+    description: Application context
   accessToken:
     type: string
     description: Access token
     x-nullable: true
     example: TY7BcoIwFEW/SIdEhenSBqd9AR4jEoLsIDoYBMGhgPD1bbpye+fce+515rfiS+lQcxALENTQwyPaKQY23Ls0YfxjfZ15pzZIshQMOF0k73MZaJ9xksujyYZcYq1oa7LhLEkNVatthyUOnF6OxxToSWeS3HI5vfHdvmjqKkvx6Tc4Ficj/2wLuvvvB+5hQlctwVLOgVua7e6c/vmqA8FKWBjvKbqihybZmsNBLCjGR4IuWJha67B5jM/ajwhsXxu2imIvHld958vQ9gTtaYk/fFlm9j3ALw==
-  notFound:
-    type: string
-    example: Not Found
-  internalServerError:
-    type: string
-    example: Internal Server Error
-  forbidden:
-    type: string
-    example: Forbidden
-  badRequest:
-    type: string
-    example: Bad Request
-  created:
-    type: string
-    example: Created
-  conflict:
-    type: string
-    example: Conflict
+  oauth2Token:
+    type: object
+    required:
+      - grantType
+      - clientID
+      - clientKey
+      - authorizationCode
+      - state
+    properties:
+      clientKey:
+        $ref: "#/definitions/clientKey"
+      clientID:
+        $ref: "#/definitions/clientID"
+      grantType:
+        $ref: "#/definitions/grantType"
+      authorizationCode:
+        $ref: "#/definitions/authorizationCode"
+      state:
+        $ref: "#/definitions/state"
   verifyTokenParam:
     type: object
     required:
