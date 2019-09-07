@@ -14,6 +14,9 @@ securityDefinitions: # https://swagger.io/docs/specification/2-0/authentication/
     authorizationUrl: https://futuremobile.net/oauth2/authorize
     tokenUrl: https://futuremobile.net/oauth2/token
     scopes:
+      bulletin.write: Grants write text to the bulletin board
+      bulletin.read: Grants read text from the bulletin board
+      bulletin.admin: Grants admin access for the bulletin board
       userinfo.write: Grants write access for the user info
       userinfo.read: Grants read access for the user info
       userinfo.admin: Grants admin access for the user info
@@ -121,9 +124,7 @@ paths:
       summary: Upload files to the storage
       description: Upload multiple files into the given path (folder)
       security:
-       - OAuth2: [storage.write]
-       - OAuth2: [storage.admin]
-       - OAuth2: [admin]
+       - OAuth2: [storage.write, storage.admin, admin]
       consumes:
         - multipart/form-data
       produces:
@@ -159,9 +160,7 @@ paths:
       summary: Download a file
       description: Streaming a file contents to the client
       security:
-       - OAuth2: [storage.read]
-       - OAuth2: [storage.admin]
-       - Oauth2: [admin]
+       - OAuth2: [storage.read, storage.admin, admin]
       produces:
         - application/octect-stream
         - text/plain
@@ -187,9 +186,7 @@ paths:
       summary: Get a list of files and folders
       description: Get a list of files and folders in a given path (folder)
       security:
-       - OAuth2: [storage.read]
-       - OAuth2: [storage.admin]
-       - OAuth2: [admin]
+       - OAuth2: [storage.read, storage.admin, admin]
       produces:
         - application/json
       parameters:
@@ -215,9 +212,7 @@ paths:
       description: Check whether the nickname or the id is duplicated
       security:
         - APIKeyAuth: []
-        - OAuth2: [userinfo.read]
-        - OAuth2: [userinfo.admin]
-        - OAuth2: [admin]
+        - OAuth2: [userinfo.read, userinfo.admin, admin]
       produces:
         - text/plain
       parameters:
@@ -280,9 +275,7 @@ paths:
       description: Sign up a new user with profile image, name, id, and so on...
       operationId: postUserInfo
       security:
-        - OAuth2: [userinfo.write]
-        - OAuth2: [userinfo.admin]
-        - OAuth2: [admin]
+        - OAuth2: [userinfo.write, userinfo.admin, admin]
       consumes:
         - multipart/form-data
       produces:
@@ -358,9 +351,7 @@ paths:
       description: update a user information such as profile image, name, ID, and so on...
       operationId: updateUserInfo
       security:
-        - OAuth2: [userinfo.write]
-        - OAuth2: [userinfo.admin]
-        - OAuth2: [admin]
+        - OAuth2: [userinfo.write, userinfo.admin, admin]
       consumes:
         - multipart/form-data
       produces:
@@ -525,11 +516,7 @@ paths:
       summary: Verify credentials
       description: Verify credentials, such as a token
       security:
-        - OAuth2: [userinfo.read]
-        - OAuth2: [storage.read]
-        - OAuth2: [userinfo.admin]
-        - OAuth2: [storage.admin]
-        - OAuth2: [admin]
+        - OAuth2: [userinfo.read, userinfo.admin, storage.read, storage.admin, admin]
       produces:
         - application/json
         - text/plain
