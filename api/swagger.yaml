@@ -51,7 +51,7 @@ paths:
           description: Not Found
         500:
           description: Internal Server Error
-  /authorize:
+  /oauth2/authorize:
     get:
       tags:
         - OAuth2
@@ -89,7 +89,7 @@ paths:
           description: Not Found
         500:
           description: Internal Server Error
-  /token:
+  /oauth2/token:
     post:
       tags:
         - OAuth2
