@@ -20,3 +20,9 @@ doc: validate
 
 run:
 	@go run internal/cmd-server/main.go #--tls-port=${TLS_PORT} --tls-key=${TLS_KEY} --tls-certificate=${TLS_CERTIFICATE}
+
+clean:
+	@rm -rf go.mod
+	@rm -rf go.sum
+	@rm -rf internal/cmd/
+	@rm -rf internal/pkg/
