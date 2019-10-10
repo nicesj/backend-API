@@ -26,6 +26,57 @@ securityDefinitions: # https://swagger.io/docs/specification/2-0/authentication/
     in: header
     name: Authorization
 paths:
+  /oauth2/authorize:
+    get:
+      tags:
+        - Authorization
+      operationId: oauth2authorize
+      summary: Authorize user by login UI
+      description: Validate user by their credentials such as userId and password.
+      security: []
+      parameters:
+        - in: query
+          name: returnUrl
+          type: string
+          description: A URL to go when a user logged in successfully
+      produces:
+        - application/html
+        - text/plain
+      responses:
+        200:
+          description: Login Page
+        400:
+          description: Bad Request
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+  /oauth2/token:
+    post:
+      tags:
+        - Authorization
+      operationId: oauth2token
+      summary: Provide authorized tokens
+      description: Provide authorized tokens to the client
+      security: []
+      parameters:
+        - in: body
+          name: request_token
+          description: Request information
+          schema:
+            $ref: "#/definitions/requestToken"
+      produces:
+        - application/html
+        - application/json
+      responses:
+        200:
+          description: Token
+        400:
+          description: Bad Request
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
   /rss:
     get:
       tags: 
@@ -552,6 +603,10 @@ definitions:
     type: string
     description: Client ID
     example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
+  code:
+    type: string
+    description: Access Code
+    example: 8604f84b-0c74-4fc8-8561-0e38dcc9ca56
   clientKey:
     type: string
     description: Client Key
@@ -579,6 +634,31 @@ definitions:
   conflict:
     type: string
     example: Conflict
+  grantType:
+    type: string
+    example: password
+  redirectURL:
+    type: string
+    example: https://helloworld.com/loggedIn
+  requestToken:
+    type: object
+    required:
+      - grantType
+      - clientID
+      - redirectURL
+      - code
+      - clientKey
+    properties:
+      grantType:
+        $ref: "#/definitions/grantType"
+      clientID:
+        $ref: "#/definitions/clientID"
+      redirectURL:
+        $ref: "#/definitions/redirectURL"
+      code:
+        $ref: "#/definitions/code"
+      clientKey:
+        $ref: "#/definitions/clientKey"
   verifyTokenParam:
     type: object
     required:
